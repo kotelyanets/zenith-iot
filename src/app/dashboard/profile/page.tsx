@@ -1,12 +1,18 @@
-"use client"
-
+import { auth } from "@/auth"
+import { signOutAction } from "@/app/lib/signout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { User, Mail, Shield, Bell, Key, LogOut } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+    const session = await auth();
+    const user = session?.user;
+
+    // Use type assertion for role since we haven't updated types yet
+    const role = (user as any)?.role || "user";
+
     return (
         <div className="p-4 pt-16 lg:pt-8 lg:p-8 space-y-8 max-w-4xl mx-auto">
             {/* Header */}
@@ -21,16 +27,20 @@ export default function ProfilePage() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                         {/* Avatar */}
                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center border-2 border-violet-400/30 shadow-lg shadow-violet-500/20">
-                            <User className="w-10 h-10 text-white" />
+                            {user?.image ? (
+                                <img src={user.image} alt={user.name || "User"} className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                                <User className="w-10 h-10 text-white" />
+                            )}
                         </div>
 
                         {/* Info */}
                         <div className="flex-1">
-                            <h2 className="text-xl font-semibold text-zinc-100">Admin User</h2>
-                            <p className="text-zinc-400 text-sm">admin@zenith-iot.com</p>
+                            <h2 className="text-xl font-semibold text-zinc-100">{user?.name || "User"}</h2>
+                            <p className="text-zinc-400 text-sm">{user?.email}</p>
                             <div className="flex gap-2 mt-2">
-                                <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 hover:bg-violet-500/30">
-                                    Administrator
+                                <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 hover:bg-violet-500/30 capitalize">
+                                    {role}
                                 </Badge>
                                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30">
                                     Verified
@@ -59,23 +69,23 @@ export default function ProfilePage() {
                         <div>
                             <label className="text-xs text-zinc-500 uppercase tracking-wider mb-1.5 block">Full Name</label>
                             <Input
-                                defaultValue="Admin User"
+                                defaultValue={user?.name || ""}
                                 className="bg-white/5 border-white/10 text-zinc-200 focus:border-violet-500"
                             />
                         </div>
                         <div>
                             <label className="text-xs text-zinc-500 uppercase tracking-wider mb-1.5 block">Email</label>
                             <Input
-                                defaultValue="admin@zenith-iot.com"
+                                defaultValue={user?.email || ""}
                                 className="bg-white/5 border-white/10 text-zinc-200 focus:border-violet-500"
                             />
                         </div>
                         <div>
                             <label className="text-xs text-zinc-500 uppercase tracking-wider mb-1.5 block">Role</label>
                             <Input
-                                defaultValue="Platform Administrator"
+                                defaultValue={role}
                                 disabled
-                                className="bg-white/5 border-white/10 text-zinc-400"
+                                className="bg-white/5 border-white/10 text-zinc-400 capitalize"
                             />
                         </div>
                         <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white">
@@ -129,10 +139,12 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
 
-                    <Button variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300">
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Sign Out
-                    </Button>
+                    <form action={signOutAction}>
+                        <Button variant="outline" type="submit" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                            <LogOut className="w-4 h-4 mr-2" />
+                            Sign Out
+                        </Button>
+                    </form>
                 </div>
             </div>
         </div>
