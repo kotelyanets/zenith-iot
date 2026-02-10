@@ -1,0 +1,94 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─── Auth Models ────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("admin")
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── IoT Models ─────────────────────────────────────────
+
+model Device {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // "sensor" | "actuator" | "gateway" | "controller"
+  status      String   @default("online") // "online" | "offline" | "warning"
+  location    String?  // e.g. "Building A - Floor 2"
+  region      String?  // e.g. "North America", "Europe"
+  lat         Float?
+  lng         Float?
+  firmware    String?
+  uptime      Float    @default(99.9) // percentage
+  cpu         Float    @default(0)
+  temperature Float    @default(0)
+  signal      Float    @default(0) // dBm
+  lastSeen    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  incidents      Incident[]
+  energyReadings EnergyReading[]
+}
+
+model Incident {
+  id        String   @id @default(cuid())
+  deviceId  String
+  issue     String
+  severity  String   // "critical" | "warning" | "info"
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+}
+
+model EnergyReading {
+  id        String   @id @default(cuid())
+  deviceId  String
+  power     Float    // kW
+  timestamp DateTime @default(now())
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+}

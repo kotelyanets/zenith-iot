@@ -1,0 +1,21 @@
+{
+    "name": "Zenith IoT Platform",
+    "short_name": "Zenith IoT",
+    "description": "Advanced Industrial IoT Monitoring & Control Platform",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#8b5cf6",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "categories": [
+        "business",
+        "productivity"
+    ]
+}
