@@ -80,3 +80,81 @@ export async function authenticate(
         throw error;
     }
 }
+
+export async function updateProfile(
+    prevState: { message: string; success: boolean },
+    formData: FormData,
+) {
+    try {
+        const { auth } = await import('@/auth');
+        const session = await auth();
+        if (!session?.user?.email) {
+            return { message: 'Not authenticated.', success: false };
+        }
+
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+
+        if (!name || !email) {
+            return { message: 'Name and email are required.', success: false };
+        }
+
+        await prisma.user.update({
+            where: { email: session.user.email },
+            data: { name, email },
+        });
+
+        return { message: 'Profile updated successfully!', success: true };
+    } catch (error) {
+        console.error('Update profile error:', error);
+        return { message: 'Failed to update profile.', success: false };
+    }
+}
+
+export async function changePassword(
+    prevState: { message: string; success: boolean },
+    formData: FormData,
+) {
+    try {
+        const { auth } = await import('@/auth');
+        const session = await auth();
+        if (!session?.user?.email) {
+            return { message: 'Not authenticated.', success: false };
+        }
+
+        const currentPassword = formData.get('currentPassword') as string;
+        const newPassword = formData.get('newPassword') as string;
+
+        if (!currentPassword || !newPassword) {
+            return { message: 'Both passwords are required.', success: false };
+        }
+
+        if (newPassword.length < 6) {
+            return { message: 'New password must be at least 6 characters.', success: false };
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+        });
+
+        if (!user || !user.password) {
+            return { message: 'User not found or no password set.', success: false };
+        }
+
+        const isValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isValid) {
+            return { message: 'Current password is incorrect.', success: false };
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await prisma.user.update({
+            where: { email: session.user.email },
+            data: { password: hashedPassword },
+        });
+
+        return { message: 'Password changed successfully!', success: true };
+    } catch (error) {
+        console.error('Change password error:', error);
+        return { message: 'Failed to change password.', success: false };
+    }
+}
