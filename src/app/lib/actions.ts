@@ -51,6 +51,17 @@ export async function registerUser(prevState: string | undefined, formData: Form
     }
 }
 
+export async function googleAuthenticate() {
+    try {
+        await signIn('google');
+    } catch (error) {
+        if (error instanceof AuthError) {
+            return 'Google Sign In failed';
+        }
+        throw error;
+    }
+}
+
 export async function authenticate(
     prevState: string | undefined,
     formData: FormData,

@@ -4,6 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import Google from 'next-auth/providers/google';
 
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
@@ -30,6 +31,11 @@ export const { auth, signIn, signOut } = NextAuth({
 
                 return null;
             },
+        }),
+        // Google Provider
+        Google({
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
         }),
     ],
     callbacks: {
