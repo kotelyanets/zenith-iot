@@ -3,6 +3,7 @@
 import { PromptBox } from "@/components/ui/prompt-box"
 import { Bot, Sparkles, Loader2 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { chatWithGemini } from "@/app/lib/ai-action"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -37,13 +38,8 @@ export default function AIChat() {
         setIsLoading(true)
 
         try {
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userMessage }),
-            })
+            const data = await chatWithGemini(userMessage)
 
-            const data = await res.json()
             setMessages(prev => [
                 ...prev,
                 { role: 'assistant', content: data.response || data.error || 'Something went wrong.' }
@@ -51,7 +47,7 @@ export default function AIChat() {
         } catch {
             setMessages(prev => [
                 ...prev,
-                { role: 'assistant', content: 'Network error. Please check your connection and try again.' }
+                { role: 'assistant', content: 'Network error. Please check your connection.' }
             ])
         } finally {
             setIsLoading(false)

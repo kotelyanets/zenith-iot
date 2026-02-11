@@ -12,6 +12,7 @@
   "dependencies": {
     "@auth/core": "^0.41.0",
     "@auth/prisma-adapter": "^2.11.1",
+    "@google/generative-ai": "^0.24.1",
     "@number-flow/react": "^0.5.11",
     "@prisma/client": "^6.19.2",
     "@radix-ui/react-dialog": "^1.1.15",
