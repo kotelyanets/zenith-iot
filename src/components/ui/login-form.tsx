@@ -2,7 +2,8 @@
 import { User, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useActionState } from 'react';
-import { authenticate, googleAuthenticate } from '@/app/lib/actions';
+import { authenticate } from '@/app/lib/actions';
+import { signIn } from 'next-auth/react';
 
 /**
  * A glassmorphism-style login form component with animated labels and Google login.
@@ -95,7 +96,7 @@ export function LoginForm() {
                 {/* Google Login Button */}
                 <button
                     type="button"
-                    onClick={() => googleAuthenticate()}
+                    onClick={() => signIn('google')}
                     className="w-full flex items-center justify-center py-2.5 px-4 bg-white hover:bg-zinc-100 rounded-lg text-zinc-900 font-medium transition-all duration-300"
                 >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 48 48">

@@ -9,7 +9,6 @@ import { Sidebar } from "@/components/layout/sidebar"
 import { ConditionalFooter } from "@/components/layout/conditional-footer"
 import { BeamsBackground } from "@/components/ui/beams-background"
 import { TopAvatar } from "@/components/layout/top-avatar"
-import { Providers } from "@/components/providers"
 
 export default function DashboardLayout({
     children,
@@ -17,18 +16,16 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <Providers>
-            <div className="flex min-h-screen bg-[#09090b]">
-                {/* Animated Beams Background */}
-                <BeamsBackground intensity="subtle" />
+        <div className="flex min-h-screen bg-[#09090b]">
+            {/* Animated Beams Background */}
+            <BeamsBackground intensity="subtle" />
 
-                <Sidebar />
-                <TopAvatar />
-                <main className="flex-1 lg:ml-64 min-h-screen relative z-10">
-                    {children}
-                    <ConditionalFooter />
-                </main>
-            </div>
-        </Providers>
+            <Sidebar />
+            <TopAvatar />
+            <main className="flex-1 lg:ml-64 min-h-screen relative z-10">
+                {children}
+                <ConditionalFooter />
+            </main>
+        </div>
     )
 }
